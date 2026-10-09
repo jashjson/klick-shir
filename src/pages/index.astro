@@ -1,0 +1,169 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="Selah – song sets in seconds" description="Upload your song list, categorise it by language and genre, and generate a fresh, balanced set for church and fellowship in one click.">
+  <header class="topbar">
+    <div class="topbar-in">
+      <a class="brand" href="#plan" aria-label="Selah home">
+        <span class="brand-mark" id="brandMark"></span>
+        <span><b>Selah</b><small>song sets in seconds</small></span>
+      </a>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab" role="tab" data-tab="plan">Plan a set</button>
+        <button class="tab" role="tab" data-tab="library">Library <span class="count" id="libCount"></span></button>
+        <button class="tab" role="tab" data-tab="import">Import</button>
+        <button class="tab" role="tab" data-tab="history">History</button>
+      </nav>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode"></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PLAN -->
+    <section class="panel" id="panel-plan" role="tabpanel">
+      <div class="plan-grid">
+        <div>
+          <div class="card controls-sticky" id="controls"></div>
+        </div>
+        <div>
+          <div class="card" id="setCard"></div>
+          <div class="card" id="suggestCard"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="panel" id="panel-library" role="tabpanel" hidden>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Song library</h2>
+            <p>Everything you can pick from. Click a song to edit, star your favourites.</p>
+          </div>
+          <div class="row">
+            <button class="btn" id="autoCatBtn">Auto-categorise blanks</button>
+            <button class="btn primary" id="addSongBtn">Add song</button>
+          </div>
+        </div>
+        <div class="stats" id="libStats"></div>
+        <div class="toolbar">
+          <input class="search" type="search" id="libSearch" placeholder="Search title, artist, tag…" aria-label="Search songs" />
+          <select id="fLang" aria-label="Filter by language"></select>
+          <select id="fTag" aria-label="Filter by genre"></select>
+          <select id="fTempo" aria-label="Filter by tempo">
+            <option value="">Any tempo</option><option value="fast">Fast</option><option value="medium">Medium</option><option value="slow">Slow</option>
+          </select>
+          <select id="fFlag" aria-label="Other filters">
+            <option value="">All songs</option><option value="fav">Favourites</option><option value="review">Needs review</option><option value="never">Never sung</option>
+          </select>
+          <select id="fSort" aria-label="Sort">
+            <option value="title">A → Z</option><option value="recent">Recently added</option><option value="lastused">Longest unsung</option><option value="used">Most sung</option>
+          </select>
+        </div>
+        <div id="bulkBar"></div>
+        <div id="libList"></div>
+      </div>
+    </section>
+
+    <!-- IMPORT -->
+    <section class="panel" id="panel-import" role="tabpanel" hidden>
+      <div class="import-grid">
+        <div class="card">
+          <div class="card-head"><div><h2>Add your songs</h2><p>Upload a file or paste a list. We’ll work out the columns and categorise what’s missing.</p></div></div>
+          <label class="drop" id="drop">
+            <input type="file" id="fileInput" accept=".csv,.tsv,.txt,.json,text/*" />
+            <b>Drop a file here, or click to browse</b>
+            <small>CSV, TSV, TXT or JSON. From Excel / Google Sheets use File → Download → CSV.</small>
+          </label>
+          <div class="field">
+            <label for="pasteBox">…or paste a list</label>
+            <textarea id="pasteBox" placeholder="Amazing Grace - John Newton&#10;How Great Thou Art&#10;10,000 Reasons - Matt Redman&#10;&#10;Or paste rows copied from a spreadsheet (Title, Artist, Language, Genre…)"></textarea>
+          </div>
+          <div class="field opts">
+            <div>
+              <label for="oDash">“Title – Artist” in plain lists</label>
+              <select id="oDash"><option value="title-artist">Title – Artist</option><option value="artist-title">Artist – Title</option><option value="none">Don’t split</option></select>
+            </div>
+            <div>
+              <label for="oDupe">If a song already exists</label>
+              <select id="oDupe"><option value="skip">Skip it</option><option value="update">Merge new details</option></select>
+            </div>
+            <div>
+              <label for="oLang">Default language</label>
+              <input type="text" id="oLang" list="langList" placeholder="Detect automatically" />
+            </div>
+            <div>
+              <label for="oTags">Add genre/tags to all</label>
+              <input type="text" id="oTags" placeholder="e.g. Hymn, Choir" />
+            </div>
+          </div>
+          <label class="switch"><span>Auto-categorise<small>Guess language, genre and tempo for anything missing</small></span><input type="checkbox" id="oAuto" checked /></label>
+          <label class="switch"><span>One song per line<small>Use if titles contain commas, like “Holy, Holy, Holy”</small></span><input type="checkbox" id="oLines" /></label>
+        </div>
+        <div>
+          <div class="card" id="previewCard"></div>
+          <div class="card">
+            <div class="card-head"><div><h2>Try it, back it up</h2><p>Your data lives only in this browser. Back it up now and then.</p></div></div>
+            <div class="actions">
+              <button class="btn" id="sampleBtn">Load sample songs</button>
+              <button class="btn" id="templateBtn">Download CSV template</button>
+              <button class="btn" id="exportCsvBtn">Export library (CSV)</button>
+              <button class="btn" id="backupBtn">Backup (JSON)</button>
+              <label class="btn"><input type="file" id="restoreInput" accept=".json,application/json" hidden />Restore backup</label>
+              <button class="btn danger" id="wipeBtn">Erase everything</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="panel" id="panel-history" role="tabpanel" hidden>
+      <div class="plan-grid">
+        <div class="card" id="histStats"></div>
+        <div class="card"><div class="card-head"><div><h2>Past sets</h2><p>Saved sets keep the generator from repeating itself.</p></div></div><div class="hist" id="histList"></div></div>
+      </div>
+    </section>
+
+    <p class="footer">Selah · your songs stay on this device · no account, no tracking</p>
+  </main>
+
+  <datalist id="langList"></datalist>
+  <datalist id="tagList"></datalist>
+
+  <!-- Edit dialog -->
+  <dialog id="editDialog">
+    <form method="dialog" class="dlg" id="editForm">
+      <h2 id="editTitle">Edit song</h2>
+      <div class="form-grid">
+        <div class="full"><label for="eTitle">Title</label><input type="text" id="eTitle" required /></div>
+        <div><label for="eArtist">Artist / author</label><input type="text" id="eArtist" /></div>
+        <div><label for="eLang">Language</label><input type="text" id="eLang" list="langList" /></div>
+        <div class="full"><label for="eTags">Genre / tags (comma separated)</label><input type="text" id="eTags" list="tagList" /></div>
+        <div><label for="eTempo">Tempo</label><select id="eTempo"><option value="">Unknown</option><option value="fast">Fast</option><option value="medium">Medium</option><option value="slow">Slow</option></select></div>
+        <div><label for="eKey">Key</label><input type="text" id="eKey" placeholder="e.g. G" /></div>
+        <div class="full"><label for="eNotes">Notes (lyrics link, who leads it…)</label><input type="text" id="eNotes" /></div>
+        <label class="switch full"><span>Favourite<small>Favourites are picked more often</small></span><input type="checkbox" id="eFav" /></label>
+      </div>
+      <div class="dlg-foot">
+        <button type="button" class="btn danger" id="eDelete">Delete</button>
+        <span class="grow"></span>
+        <button type="button" class="btn" id="eCancel">Cancel</button>
+        <button type="submit" class="btn primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Present mode -->
+  <dialog id="presentDialog"><div class="present" id="presentBody"></div></dialog>
+
+  <!-- Shared set viewer -->
+  <dialog id="sharedDialog"><div class="dlg" id="sharedBody"></div></dialog>
+
+  <div class="toast-wrap" id="toasts" aria-live="polite"></div>
+  <div class="print-sheet" id="printSheet"></div>
+
+  <script>
+    import '../scripts/main';
+  </script>
+</Layout>
